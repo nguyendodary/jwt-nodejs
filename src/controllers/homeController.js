@@ -5,8 +5,9 @@ const handleHelloWorld = (req, res) => {
     return res.render("home.ejs", { name });
 }
 
-const handleUserPage = (req, res) => {
-    return res.render("user.ejs")
+const handleUserPage = async (req, res) => {
+    let userList = await userService.getUserList();
+    return res.render("user.ejs", { userList });
 }
 
 const handleCreateNewUser = (req, res) => {
@@ -16,7 +17,7 @@ const handleCreateNewUser = (req, res) => {
 
     //userService.createNewUser(username, email, password)
 
-    userService.getUserList();
+
 
     // console.log("Check hash password: ", hashPassword)
 
