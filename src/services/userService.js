@@ -12,16 +12,22 @@ const hashUserPassword = (userPassword) => {
     return hashPassword;
 }
 
-const createNewUser = (username, email, password) => {
+const createNewUser = async (username, email, password) => {
     let hashPass = hashUserPassword(password);
-    connection.query(
-        `INSERT INTO users(username, email, password) VALUES(?, ?, ?);`, [username, email, hashPass],
-        function (err, results, fields) {
-            if (err) {
-                console.log(err);
-            }
-        }
-    );
+    const connection = await mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        database: 'jwt',
+        Promise: bluebird,
+    });
+
+    try {
+        const [rows, fields] =
+            await connection.execute(`INSERT INTO users(username, email, password) VALUES(?, ?, ?);`,
+                [username, email, hashPass]);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const getUserList = async () => {
@@ -31,18 +37,7 @@ const getUserList = async () => {
         database: 'jwt',
         Promise: bluebird,
     });
-    let users = [];
-    // connection.query(
-    //     `Select * from users`,
-    //     function (err, results, fields) {
-    //         if (err) {
-    //             console.log(err);
-    //             return users;
-    //         }
-    //         users = results;
-    //         return users;
-    //     }
-    // );
+
     try {
         const [rows, fields] = await connection.execute(`Select * from users`);
         return rows;
@@ -51,6 +46,22 @@ const getUserList = async () => {
     }
 }
 
+const deleteUser = async (id) => {
+    const connection = await mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        database: 'jwt',
+        Promise: bluebird,
+    });
+
+    try {
+        const [rows, fields] = await connection.execute(`DELETE FROM users WHERE id=?`, [id]);
+        return rows;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
-    createNewUser, getUserList
+    createNewUser, getUserList, deleteUser
 }

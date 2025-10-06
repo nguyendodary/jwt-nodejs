@@ -15,22 +15,23 @@ const handleCreateNewUser = (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
 
-    //userService.createNewUser(username, email, password)
+    userService.createNewUser(username, email, password);
 
 
+    return res.redirect("/user");
+}
 
-    // console.log("Check hash password: ", hashPassword)
+const handleDeleteUser = async (req, res) => {
+    console.log("Received ID to delete:", req.params.id);
 
-    // let check = bcrypt.compareSync(password, hashPassword);
+    await userService.deleteUser(req.params.id);
 
-    // console.log("Check pass: ", check);
-
-
-    return res.send("handleCreateNewUser")
+    return res.redirect("/user");
 }
 
 module.exports = {
     handleHelloWorld,
     handleUserPage,
-    handleCreateNewUser
+    handleCreateNewUser,
+    handleDeleteUser
 }

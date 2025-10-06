@@ -6,6 +6,7 @@ const initWebRoutes = (app) => {
     router.get("/hello", homeController.handleHelloWorld)
     router.get("/user", homeController.handleUserPage)
     router.post("/users/create-user", homeController.handleCreateNewUser)
+    router.get("/delete-user/:id", homeController.handleDeleteUser)
     router.get("/", (req, res) => {
         return res.send("Hello World!");
     })
