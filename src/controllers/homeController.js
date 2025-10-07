@@ -29,9 +29,28 @@ const handleDeleteUser = async (req, res) => {
     return res.redirect("/user");
 }
 
+
+const getUpdateUserPage = async (req, res) => {
+    const userId = req.params.id;
+    const user = await userService.getUserById(userId);
+    if (!user) {
+        return res.send("User not found!");
+    }
+    return res.render("user-update.ejs", { user });
+};
+
+const handleUpdateUser = async (req, res) => {
+    const userId = req.params.id;
+    const { username, email } = req.body;
+    await userService.updateUser(userId, username, email);
+    return res.redirect("/user");
+};
+
+
 module.exports = {
     handleHelloWorld,
     handleUserPage,
     handleCreateNewUser,
-    handleDeleteUser
+    handleDeleteUser,
+    getUpdateUserPage, handleUpdateUser
 }
