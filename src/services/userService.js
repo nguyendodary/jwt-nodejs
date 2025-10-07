@@ -1,4 +1,3 @@
-// get the client
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcryptjs';
 import bluebird from 'bluebird';
@@ -26,67 +25,43 @@ const createNewUser = async (username, email, password) => {
 }
 
 const getUserList = async () => {
-    const connection = await mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: 'jwt',
-        Promise: bluebird,
-    });
+    let users = [];
+    users = await db.User.findAll();
+    return users;
 
-    try {
-        const [rows, fields] = await connection.execute(`Select * from user`);
-        return rows;
-    } catch (error) {
-        console.log(error);
-    }
 }
 
-const deleteUser = async (id) => {
-    const connection = await mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: 'jwt',
-        Promise: bluebird,
+const deleteUser = async (userID) => {
+    await db.User.destroy({
+        where: {
+            id: userID
+        }
     });
 
-    try {
-        const [rows, fields] = await connection.execute(`DELETE FROM user WHERE id=?`, [id]);
-        return rows;
-    } catch (error) {
-        console.log(error);
-    }
 }
 
 const getUserById = async (id) => {
-    const connection = await mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: 'jwt',
-        Promise: bluebird,
-    });
+    let user = {};
+    user = await db.User.findOne({
+        where: {
+            id: id
+        }
+    })
+    return user.get({ plain: true });
 
-    try {
-        const [rows, fields] = await connection.execute(`SELECT * FROM user WHERE id = ?`, [id]);
-        return rows.length > 0 ? rows[0] : null;
-    } catch (error) {
-        console.log(error);
-    }
 };
 
 const updateUser = async (id, username, email) => {
-    const connection = await mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: 'jwt',
-        Promise: bluebird,
-    });
-
     try {
-        await connection.execute(`UPDATE user SET username = ?, email = ? WHERE id = ?`, [username, email, id]);
+        await db.User.update(
+            { username: username, email: email },
+            { where: { id: id } }
+        );
     } catch (error) {
-        console.log(error);
+        console.log("Error updating user:", error);
     }
 };
+
 
 
 
