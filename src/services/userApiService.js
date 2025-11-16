@@ -102,41 +102,72 @@ const updateUser = async (data) => {
                 EM: "Error with empty groupId",
                 EC: 1,
                 DT: "group"
-            }
+            };
         }
+
+
         let user = await db.User.findOne({
-            where: {
-                id: data.id
-            }
-        })
-        if (user) {
-            await user.update({
-                username: data.username,
-                address: data.address,
-                sex: data.sex,
-                groupId: data.groupId
-            })
+            where: { id: data.id }
+        });
+
+        if (!user) {
             return {
-                EM: "Update user success",
-                EC: 0,
-                DT: ""
-            }
-        } else {
-            return {
-                EM: "Error with empty GroupId",
+                EM: "User not found",
                 EC: 2,
-                DT: "group"
+                DT: ""
+            };
+        }
+
+        if (data.email && data.email !== user.email) {
+            let emailExist = await db.User.findOne({
+                where: { email: data.email }
+            });
+            if (emailExist) {
+                return {
+                    EM: "Email already exists!",
+                    EC: 1,
+                    DT: "email"
+                };
             }
         }
+
+        if (data.phone && data.phone !== user.phone) {
+            let phoneExist = await db.User.findOne({
+                where: { phone: data.phone }
+            });
+            if (phoneExist) {
+                return {
+                    EM: "Phone number already exists!",
+                    EC: 1,
+                    DT: "phone"
+                };
+            }
+        }
+
+        await user.update({
+            username: data.username,
+            address: data.address,
+            sex: data.sex,
+            groupId: data.groupId,
+            phone: data.phone,
+            email: data.email
+        });
+
+        return {
+            EM: "Update user success",
+            EC: 0,
+            DT: ""
+        };
+
     } catch (error) {
         console.log(error);
         return {
-            EM: "Something wrongs with services",
+            EM: "Something wrong with service",
             EC: 1,
             DT: []
-        }
+        };
     }
-}
+};
 
 const deleteUser = async (id) => {
     try {
