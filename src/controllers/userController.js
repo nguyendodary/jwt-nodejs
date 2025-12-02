@@ -2,24 +2,16 @@ import userApiService from "../services/userApiService";
 
 const readFunc = async (req, res) => {
     try {
-        if (req.query.page && req.query.limit) {
-            let page = req.query.page;
-            let limit = req.query.limit;
-            let data = await userApiService.getUserWithPagination(+page, +limit);
-            return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT
-            })
-            console.log("Check data ", "page: ", page, " limit: ", limit)
-        } else {
-            let data = await userApiService.getAllUser();
-            return res.status(200).json({
-                EM: data.EM,
-                EC: data.EC,
-                DT: data.DT
-            })
-        }
+        let page = +req.query.page || 1;
+        let limit = +req.query.limit || 10;
+
+        let data = await userApiService.getUserWithPagination(page, limit);
+
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        });
 
     } catch (error) {
         console.log(error);
@@ -27,9 +19,10 @@ const readFunc = async (req, res) => {
             EM: "error from server",
             EC: "-1",
             DT: ""
-        })
+        });
     }
-}
+};
+
 const createFunc = async (req, res) => {
     try {
         let data = await userApiService.createNewUser(req.body);
@@ -86,6 +79,19 @@ const deleteFunc = async (req, res) => {
     }
 }
 
+const getUserAccount = async (req, res) => {
+    return res.status(200).json({
+        EM: "OK",
+        EC: 0,
+        DT: {
+            access_token: req.token,
+            groupWithRoles: req.user.groupWithRoles,
+            email: req.user.email,
+            username: req.user.username
+        }
+    })
+}
+
 module.exports = {
-    readFunc, createFunc, updateFunc, deleteFunc
+    readFunc, createFunc, updateFunc, deleteFunc, getUserAccount
 }

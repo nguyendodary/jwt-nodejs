@@ -34,34 +34,35 @@ const getAllUser = async () => {
 
 const getUserWithPagination = async (page, limit) => {
     try {
-        let offset = (page - 1) * limit
+        let offset = (page - 1) * limit;
         const { count, rows } = await db.User.findAndCountAll({
             offset: offset,
             limit: limit,
-            attributes: ["id", "username", "email", "phone", "sex"],
+            attributes: ["id", "username", "email", "phone", "sex", "address"],
             include: { model: db.Group, attributes: ["name", "description", "id"] },
             order: [["id", "DESC"]]
-        })
-        let totalPages = Math.ceil(count / limit)
-        let data = {
-            totalRows: count,
-            totalPages: totalPages,
-            users: rows
-        }
+        });
+
+        const totalPages = Math.ceil(count / limit);
+
         return {
             EM: "fetch ok",
-            EC: 0,
-            DT: data
-        }
+            EC: "0",
+            DT: {
+                totalRows: count,
+                totalPages: totalPages,
+                users: rows
+            }
+        };
     } catch (error) {
         console.log(error);
         return {
-            EM: "Get data fail",
-            EC: 1,
+            EM: "error from service",
+            EC: "1",
             DT: []
-        }
+        };
     }
-}
+};
 
 const createNewUser = async (data) => {
     try {
